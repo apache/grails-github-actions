@@ -14,12 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build deploy-github-pages docker image
-        run: docker build -t local-deploy-pages - < deploy-github-pages/Dockerfile
+        working-directory: deploy-github-pages
+        run: docker build -t local-deploy-pages - < Dockerfile
       - name: Build export-gradle-properties docker image
-        run: docker build -t local-export-gradle-properties - < export-gradle-properties/Dockerfile
+        working-directory: export-gradle-properties
+        run: docker build -t local-export-gradle-properties - < Dockerfile
       - name: Build post-release docker image
-        run: docker build -t local-post-release - < post-release/Dockerfile
+        working-directory: post-release
+        run: docker build -t local-post-release - < Dockerfile
       - name: Build pre-release docker image
-        run: docker build -t local-pre-release - < pre-release/Dockerfile
+        working-directory: pre-release
+        run: docker build -t local-pre-release - < Dockerfile
       - name: Build release-notes docker image
-        run: docker build -t local-release-notes - < release-notes/Dockerfile
+        working-directory: release-notes
+        run: docker build -t local-release-notes - < Dockerfile

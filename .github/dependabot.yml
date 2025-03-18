@@ -1,6 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: "docker"
-    directory: "/" 
+    directories:
+      - "/deploy-github-pages"
+      - "/export-gradle-properties"
+      - "/post-release"
+      - "/pre-release"
+      - "/release-notes" 
     schedule:
       interval: "weekly"
