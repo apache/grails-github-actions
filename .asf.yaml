@@ -16,6 +16,9 @@
 #
 # see https://s.apache.org/asfyaml
 github:
+  features:
+    issues: true
+    projects: true
   # deployment environments to delay releasing until the necessary steps have completed
   environments:
     release:
