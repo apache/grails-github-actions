@@ -1,0 +1,21 @@
+The Apache Grails (incubating) community is pleased to announce the release of Apache Grails (incubating) GitHub Actions ${VERSION}.
+
+These actions assist with automating common publishing tasks in Grails Projects.
+
+The release notes are available here:
+https://github.com/apache/grails-github-actions/releases/tag/v${VERSION}
+
+For the complete list of changes:
+https://github.com/apache/grails-github-actions/compare/v${PREVIOUS_VERSION}...v${VERSION}
+
+Apache Grails website: https://grails.apache.org/
+
+Download Links: https://grails.apache.org/download.html
+
+Grails Resources:
+- Grails GitHub Actions repo: https://github.com/apache/grails-github-actionjs
+- Issues: https://github.com/apache/grails-github-actions/issues
+- Mailing lists: https://grails.apache.org/community.html
+
+Happy Coding,
+The Apache Grails (incubating) Team
