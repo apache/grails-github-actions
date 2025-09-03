@@ -42,3 +42,15 @@ Used by: https://github.com/search?q=org%3Aapache+%22uses%3A+apache%2Fgrails-git
 ## Further information
 
 To use these actions, please refer to the individual README files in each action's directory.
+
+## Testing
+
+To bootstrap the test project so it can be run against the source distribution, execute: 
+
+    cd tests/gradle-bootstrap
+    gradle bootstrap
+
+Then to run the tests, execute:
+
+    cd ..
+    gradle check
