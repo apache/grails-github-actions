@@ -4,6 +4,7 @@ on:
     types: [published]
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  RELEASE_TAG_PREFIX: 'v'
   JAVA_VERSION: '17.0.15'
 jobs:
   test:
