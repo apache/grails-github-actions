@@ -25,7 +25,7 @@ set_value_or_error() {
   local defaultValue="$2"
   local variableName="$3"
   local validValues="${4:-}"  # optional argument (if empty, skip validation)
-  
+
   if [[ -z "$value" && -z "$defaultValue" ]]; then
     echo "ERROR: A value for $variableName is required." >&2
     exit 1
@@ -165,21 +165,6 @@ fi
 # SOURCE_FOLDER - the relative path of the source documentation folder from the root of the repo
 set_path_value_or_error "${SOURCE_FOLDER}" "" "SOURCE_FOLDER"
 
-# RELEASE_TAG_PREFIX - the tag prefix to use for a release version, defaults to 'v'
-set_value_or_error "${RELEASE_TAG_PREFIX}" "v" "RELEASE_TAG_PREFIX"
-
-# VERSION - the version number of this snapshot or release, v7.0.2 will be `7.0.2`, 7.0.x will be 7.0.x
-set_value_or_error "${VERSION}" "${GITHUB_REF_NAME}" "VERSION"
-if [[ ! "${VERSION}" =~ ^(${RELEASE_TAG_PREFIX})?[^.]+\.[^.]+\.[^.]+$ ]]; then
-  echo "ERROR: VERSION must be in the format 'X.X.X' or '${RELEASE_TAG_PREFIX}X.X.X'. Got: '${VERSION}'"
-  exit 1
-fi
-if [[ $VERSION == "${RELEASE_TAG_PREFIX}"* ]]; then
-  VERSION=${VERSION:${#RELEASE_TAG_PREFIX}}
-else
-  VERSION="$VERSION"
-fi
-
 # TARGET_SUBFOLDER - an optional sub folder to publish to
 set_path_value_or_error "${TARGET_SUBFOLDER}" "." "TARGET_SUBFOLDER"
 if [ "${TARGET_SUBFOLDER}" == "." ]; then
@@ -256,6 +241,19 @@ if [[ "$GRADLE_PUBLISH_RELEASE" == "false" ]]; then
   echo "::endgroup::"
 else
   echo "Release detected"
+
+  # RELEASE_TAG_PREFIX - the tag prefix to use for a release version, defaults to 'v'
+  set_value_or_error "${RELEASE_TAG_PREFIX}" "v" "RELEASE_TAG_PREFIX"
+
+  # VERSION - the version number of this snapshot or release, v7.0.2 will be `7.0.2`, 7.0.x will be 7.0.x
+  set_value_or_error "${VERSION}" "${GITHUB_REF_NAME}" "VERSION"
+  if [[ ! "${VERSION}" =~ ^(${RELEASE_TAG_PREFIX})?[^.]+\.[^.]+\.[^.]+$ ]]; then
+    echo "ERROR: VERSION must be in the format 'X.X.X' or '${RELEASE_TAG_PREFIX}X.X.X'. Got: '${VERSION}'"
+    exit 1
+  fi
+  if [[ $VERSION == "${RELEASE_TAG_PREFIX}"* ]]; then
+    VERSION=${VERSION:${#RELEASE_TAG_PREFIX}}
+  fi
 
   # Publish to the specific version folder
   echo "::group::Publishing Specific Release Version: ${VERSION}"

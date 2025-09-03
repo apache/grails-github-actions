@@ -258,6 +258,112 @@ class DeployGithubPagesSpec extends Specification {
         action.close()
     }
 
+    def "snapshot - published without subfolder"() {
+        given:
+        Network net = Network.newNetwork()
+
+        and:
+        GitHubVersion release = new GitHubVersion(version: '7.0.0-RC1', targetBranch: '7.0.x', targetVersion: '7.0.0-SNAPSHOT')
+        GitHubDockerAction action = new GitHubDockerAction('deploy-github-pages', release, new GitHubCliMock())
+
+        GitHubRepoMock gitRepo = new GitHubRepoMock(action.workspacePath, net)
+        gitRepo.init()
+        gitRepo.populateRepository('7.0.0-SNAPSHOT', null, [], getProjectFiles())
+        gitRepo.stageRepositoryForAction('main', false)
+
+        and:
+        def env = getDefaultEnvironment(action, gitRepo)
+        env['GRADLE_PUBLISH_RELEASE'] = 'false' // snapshot
+        env['SOURCE_FOLDER'] = 'docs'
+        env['VERSION'] = '7.0.0-SNAPSHOT'
+
+        and:
+        action.createContainer(env, net)
+
+        when:
+        action.runAction()
+
+        then:
+        action.actionExitCode == 0L
+        action.actionLogs
+
+        and: 'gh-pages branch created'
+        action.getActionGroupLogs('Creating documentation branch')
+        gitRepo.branchExists('gh-pages')
+
+        and: 'files published to snapshot'
+        gitRepo.getFileContents('index.html', 'gh-pages') == '<html><body>Welcome to the Grails GitHub Pages</body></html>'
+        gitRepo.getFolders('snapshot', 'gh-pages') == []
+        gitRepo.getFileContents('snapshot/index.html', 'gh-pages') == '<html><body>Welcome to the Grails Documentation</body></html>'
+
+        and: 'main did not change'
+        gitRepo.getFileContents('gradle.properties', 'main') == 'projectVersion=7.0.0-SNAPSHOT'
+
+        and: 'main did not add any folders'
+        gitRepo.getFolders( 'main') == ['docs']
+
+        and: 'gh-pages added expected folders'
+        gitRepo.getFolders('gh-pages') == ['snapshot']
+
+        cleanup:
+        System.out.println("Container logs:\n${action.actionLogs}" as String)
+        gitRepo?.close()
+        action.close()
+    }
+
+    def "snapshot - version is ignored on snapshot"() {
+        given:
+        Network net = Network.newNetwork()
+
+        and:
+        GitHubVersion release = new GitHubVersion(version: '7.0.0-RC1', targetBranch: '7.0.x', targetVersion: '7.0.0-SNAPSHOT')
+        GitHubDockerAction action = new GitHubDockerAction('deploy-github-pages', release, new GitHubCliMock())
+
+        GitHubRepoMock gitRepo = new GitHubRepoMock(action.workspacePath, net)
+        gitRepo.init()
+        gitRepo.populateRepository('7.0.0-SNAPSHOT', null, [], getProjectFiles())
+        gitRepo.stageRepositoryForAction('main', false)
+
+        and:
+        def env = getDefaultEnvironment(action, gitRepo)
+        env['GRADLE_PUBLISH_RELEASE'] = 'false' // snapshot
+        env['SOURCE_FOLDER'] = 'docs'
+        env['VERSION'] = 'BAD_VERSION_THAT_SHOULD_NOT_CAUSE_FAILURE'
+
+        and:
+        action.createContainer(env, net)
+
+        when:
+        action.runAction()
+
+        then:
+        action.actionExitCode == 0L
+        action.actionLogs
+
+        and: 'gh-pages branch created'
+        action.getActionGroupLogs('Creating documentation branch')
+        gitRepo.branchExists('gh-pages')
+
+        and: 'files published to snapshot'
+        gitRepo.getFileContents('index.html', 'gh-pages') == '<html><body>Welcome to the Grails GitHub Pages</body></html>'
+        gitRepo.getFolders('snapshot', 'gh-pages') == []
+        gitRepo.getFileContents('snapshot/index.html', 'gh-pages') == '<html><body>Welcome to the Grails Documentation</body></html>'
+
+        and: 'main did not change'
+        gitRepo.getFileContents('gradle.properties', 'main') == 'projectVersion=7.0.0-SNAPSHOT'
+
+        and: 'main did not add any folders'
+        gitRepo.getFolders( 'main') == ['docs']
+
+        and: 'gh-pages added expected folders'
+        gitRepo.getFolders('gh-pages') == ['snapshot']
+
+        cleanup:
+        System.out.println("Container logs:\n${action.actionLogs}" as String)
+        gitRepo?.close()
+        action.close()
+    }
+
     def "release - published without subfolder"() {
         given:
         Network net = Network.newNetwork()

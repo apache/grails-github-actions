@@ -57,7 +57,9 @@ class GitHubDockerAction implements Closeable {
         // api mock must be started to know the url to include in the event json
         apiMock = new GitHubApiMock(version)
         apiMock.start()
-        getWorkflowPath().resolve('event.json').toFile().text = getEventJson()
+        if(version.tagName) {
+            getWorkflowPath().resolve('event.json').toFile().text = getEventJson()
+        }
 
         getMockPath().toFile().mkdirs()
         for (CliMock cliMock : cliMocks) {
@@ -89,7 +91,12 @@ class GitHubDockerAction implements Closeable {
         env['GITHUB_REPOSITORY'] = version.repository
         env['GITHUB_TOKEN'] = 'ghp_randomtokenhere1234567890'
         env['GITHUB_EVENT_PATH'] = '/github/workflow/event.json'
-        env['GITHUB_REF'] = "refs/tags/${version.tagName}" as String
+        if(version.tagName) {
+            env['GITHUB_REF'] = "refs/tags/${version.tagName}" as String
+        }
+        else {
+            env['GITHUB_REF'] = "refs/heads/${version.targetBranch}" as String
+        }
         env['GITHUB_OUTPUT'] = '/github/github-output.txt'
         env['GITHUB_ENV'] = '/github/github-env'
         env['PATH'] = '/github/path:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
