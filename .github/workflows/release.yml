@@ -43,7 +43,7 @@ jobs:
         with:
           develocity-access-key: ${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY  }}
       - name: "🔨 Test project"
-        working-directory: 'tests'
+        working-directory: '${{ steps.extract_repository_name.outputs.value }}/tests'
         run: >
           ./gradlew test
           --continue --stacktrace
