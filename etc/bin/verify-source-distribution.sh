@@ -48,19 +48,23 @@ echo "Verifying checksum..."
 shasum -a 512 -c "apache-grails-github-actions-${VERSION}-incubating-src.zip.sha512"
 echo "✅ Checksum Verified"
 
+echo "Downloading KEYS file"
+curl -o "${SCRIPT_DIR}/KEYS" https://dist.apache.org/repos/dist/release/incubator/grails/KEYS
+echo "✅ KEYS Downloaded"
+
 echo "Importing GPG key to independent GPG home ..."
-gpg --homedir "${GRAILS_GPG_HOME}" --import "${SCRIPT_DIR}/../../KEYS"
+gpg --homedir "${GRAILS_GPG_HOME}" --import "${SCRIPT_DIR}/KEYS"
 echo "✅ GPG Key Imported"
 
 echo "Verifying GPG signature..."
 gpg --homedir "${GRAILS_GPG_HOME}" --verify "apache-grails-github-actions-${VERSION}-incubating-src.zip.asc" "apache-grails-github-actions-${VERSION}-incubating-src.zip"
 echo "✅ GPG Verified"
 
-SRC_DIR="grails"
+SRC_DIR="${DOWNLOAD_LOCATION}/grails-github-actions"
 
 if [ -d "${SRC_DIR}" ]; then
   echo "Previous grails directory found, purging"
-  cd grails
+  cd "$SRC_DIR"
   find . -mindepth 1 -path ./etc -prune -o -exec rm -rf {} + || true
   cd etc
   find . -mindepth 1 -path ./bin -prune -o -exec rm -rf {} + || true
