@@ -28,6 +28,8 @@ For releases, the following folders are published:
 For snapshots, the following folders are published:
 - `snapshot` - a folder that's intended to be updated to the latest snapshot documentation.
 
+Note: snapshots ignore the VERSION parameter and always publish to the `snapshot` folder.
+
 ## Requirements
 If using the default `GITHUB_TOKEN`, this action requires permission `contents: write`. Otherwise, the provided `GH_TOKEN` must be able to commit to the documentation branch.
 
@@ -43,6 +45,7 @@ If using the default `GITHUB_TOKEN`, this action requires permission `contents: 
 * (optional) `SKIP_RELEASE_FOLDER` - if set to `true`, the action will not create a specific release version folder. Defaults to `false`.
 * (optional) `SKIP_SNAPSHOT_FOLDER` - if set to `true`, the action will not publish any snapshot documentation. Defaults to `false`.
 * (optional) `TARGET_REPOSITORY` - the target repository to which the documentation files will be copied. If not provided, the action will use the repository from which it is run. Format of `owner/repository` is expected.
+* (optional) `RELEASE_TAG_PREFIX` - the prefix used for release tags. Defaults to `v`.  Must have a value defined.
 
 ## Example Usage
 

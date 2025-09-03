@@ -25,15 +25,15 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 class GitHubApiMock implements Closeable {
 
     WireMockServer githubApi
-    GitHubVersion release
+    GitHubVersion version
 
-    GitHubApiMock(GitHubVersion release) {
+    GitHubApiMock(GitHubVersion version) {
         githubApi = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort())
-        this.release = release
+        this.version = version
     }
 
     private void mockDefault() {
-        githubApi.stubFor(WireMock.patch(WireMock.urlEqualTo("/repos/${release.repository}/releases/42"))
+        githubApi.stubFor(WireMock.patch(WireMock.urlEqualTo("/repos/${version.repository}/releases/42"))
                 .withHeader("Authorization", WireMock.matching("(?i)Bearer\\s+.+")) // accept any bearer token
                 .withHeader("Content-Type", WireMock.containing("application/json"))
                 .withRequestBody(WireMock.equalToJson("{\"draft\": false}", true, true)) // ignore spacing/field order
@@ -43,7 +43,7 @@ class GitHubApiMock implements Closeable {
                         .withBody("{\"id\":123,\"draft\":false}")))
 
 
-        githubApi.stubFor(WireMock.patch(WireMock.urlEqualTo("/repos/${release.repository}/milestones/1"))
+        githubApi.stubFor(WireMock.patch(WireMock.urlEqualTo("/repos/${version.repository}/milestones/1"))
                 .withHeader("Authorization", WireMock.matching("(?i)Bearer\\s+.+")) // accept any bearer token
                 .withHeader("Content-Type", WireMock.containing("application/json"))
                 .withRequestBody(WireMock.equalToJson("{\"state\": \"closed\"}", true, true)) // ignore spacing/field order
@@ -52,20 +52,20 @@ class GitHubApiMock implements Closeable {
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"id\":1,\"state\":closed}")))
 
-        githubApi.stubFor(WireMock.get(WireMock.urlPathEqualTo("/repos/${release.repository}/milestones"))
+        githubApi.stubFor(WireMock.get(WireMock.urlPathEqualTo("/repos/${version.repository}/milestones"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
 [
   {
-    "url": "https://api.github.com/repos/${release.repository}/milestones/1",
-    "html_url": "https://github.com/${release.repository}/milestone/1",
-    "labels_url": "https://api.github.com/repos/${release.repository}/milestones/1/labels",
+    "url": "https://api.github.com/repos/${version.repository}/milestones/1",
+    "html_url": "https://github.com/${version.repository}/milestone/1",
+    "labels_url": "https://api.github.com/repos/${version.repository}/milestones/1/labels",
     "id": 13156954,
     "node_id": "MI_kwDOJ-ZrdM4AyMJa",
     "number": 1,
-    "title": "${release.version}",
+    "title": "${version.version}",
     "description": null,
     "creator": {
       "login": "jamesfredley",
