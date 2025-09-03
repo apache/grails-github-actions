@@ -13,6 +13,7 @@ jobs:
     outputs:
       release_version: ${{ steps.release_version.outputs.value }}
       extract_repository_name: ${{ steps.extract_repository_name.outputs.value }}
+      commit_hash: ${{ steps.commit_hash.outputs.value }}
     steps:
       - name: "Output Agent IP" # in the event RAO blocks this agent, this can be used to debug it
         run: curl -s https://api.ipify.org
@@ -33,6 +34,26 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: v${{ steps.release_version.outputs.value }}
           path: ${{ steps.extract_repository_name.outputs.value }}
+      - name: 'Fetch release Commit Hash'
+        id: commit_hash
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ steps.extract_repository_name.outputs.value }}
+          TAG: 'v${{ steps.release_version.outputs.value }}'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ref_json=$(gh api "repos/$OWNER/$REPO/git/ref/tags/$TAG")
+
+          type=$(jq -r '.object.type' <<<"$ref_json")
+          sha=$(jq -r '.object.sha'  <<<"$ref_json")
+
+          if [ "$type" = "tag" ]; then
+            sha=$(gh api "repos/$OWNER/$REPO/git/tags/$sha" --jq '.object.sha')
+          fi
+
+          echo "Found Commit Sha: $sha"
+
+          echo "value=$sha" >>"$GITHUB_OUTPUT"
       - name: "☕️ Setup JDK"
         uses: actions/setup-java@v4
         with:
@@ -160,9 +181,9 @@ jobs:
           cd dev-repo
           mkdir -p $VERSION/sources          
           cd $VERSION/sources
-          curl -LO https://github.com/apache/grails-github-actions/releases/download/$TAG/apache-grails-$VERSION-incubating-src.zip
-          curl -LO https://github.com/apache/grails-github-actions/releases/download/$TAG/apache-grails-$VERSION-incubating-src.zip.sha512
-          curl -LO https://github.com/apache/grails-github-actions/releases/download/$TAG/apache-grails-$VERSION-incubating-src.zip.asc
+          curl -LO https://github.com/apache/${{ needs.test.outputs.extract_repository_name }}/releases/download/$TAG/apache-${{ needs.test.outputs.extract_repository_name }}-$VERSION-incubating-src.zip
+          curl -LO https://github.com/apache/${{ needs.test.outputs.extract_repository_name }}/releases/download/$TAG/apache-${{ needs.test.outputs.extract_repository_name }}-$VERSION-incubating-src.zip.sha512
+          curl -LO https://github.com/apache/${{ needs.test.outputs.extract_repository_name }}/releases/download/$TAG/apache-${{ needs.test.outputs.extract_repository_name }}-$VERSION-incubating-src.zip.asc
           echo "Downloaded the following files:"
           ls -l
       - name: "Upload distributions"
