@@ -62,8 +62,10 @@ jobs:
           ref: v${{ needs.test.outputs.release_version }}
           path: ${{ needs.test.outputs.extract_repository_name }}
       - name: 'Determine Common Build Date' # to ensure a reproducible build
+        working-directory: ${{ needs.test.outputs.extract_repository_name }}
         run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> "$GITHUB_ENV"
       - name: "Generate Build Date file"
+        working-directory: ${{ needs.test.outputs.extract_repository_name }}
         run: echo "$SOURCE_DATE_EPOCH" >> BUILD_DATE
       - name: "🗑️ Remove unnecessary files"
         run: |
