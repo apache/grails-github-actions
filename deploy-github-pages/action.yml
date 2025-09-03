@@ -15,6 +15,13 @@
 
 name: 'Grails github-pages deployment action'
 description: 'Copies documentation to the gh-pages branch'
+inputs:
+  token:
+    description: 'GitHub token to authenticate the requests'
+    required: true
+    default: ${{ github.token }}
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  env:
+    GITHUB_TOKEN: ${{ inputs.token }}
