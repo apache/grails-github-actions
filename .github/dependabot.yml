@@ -35,3 +35,11 @@ updates:
     directory: "/export-gradle-properties"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/cascade-merge"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/validate-actions"
+    schedule:
+      interval: "weekly"
