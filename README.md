@@ -31,6 +31,7 @@ Actions include:
 3. `post-release` - assists in merging tagged changes back to the target branch & bumping to the next development version.
 4. `export-gradle-properties` - exposes selected Gradle properties as environment variables.
 5. `cascade-merge` - merges a branch forward through an explicit ordered list of downstream branches when there are no conflicts.
+6. `validate-actions` - verifies that every action used by the repository's workflows is on the ASF Infra approved list.
 
 ## Who can use these actions
 
