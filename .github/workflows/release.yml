@@ -20,7 +20,7 @@ concurrency:
 jobs:
   test:
     name: 'Tests'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: "🌐 Output Agent IP" # in the event RAO blocks this agent, this can be used to debug it
         run: curl -s https://api.ipify.org
@@ -53,7 +53,7 @@ jobs:
     needs: test
     permissions:
       contents: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: "📝 Establish release version"
         run: echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
@@ -119,7 +119,7 @@ jobs:
   upload:
     name: "Upload Distributions to dist.apache.org"
     needs: [ test, source ]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
     env:
@@ -222,7 +222,7 @@ jobs:
     environment: release
     name: "VOTE SUCCEEDED - Release Artifacts"
     needs: [ test, source, upload ]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: "📝 Establish release version"
         run: echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"

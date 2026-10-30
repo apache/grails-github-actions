@@ -34,7 +34,7 @@ jobs:
       contents: write
       # write permission is required for autolabeler
       pull-requests: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: "🔢 Derive semver range from branch"
         id: version
